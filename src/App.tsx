@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { KeyControls } from '@/components/KeyControls';
 import { DiatonicChords } from '@/components/DiatonicChords';
@@ -16,7 +16,13 @@ function App() {
   const [diatonicExpanded, setDiatonicExpanded] = usePersistentState('mt_diatonicExpanded', false);
   const [progressionsExpanded, setProgressionsExpanded] = usePersistentState('mt_progressionsExpanded', false);
   const [selectedIds, setSelectedIds] = usePersistentState<string[]>('mt_selectedIds', []);
-  const [dark, setDark] = usePersistentState('mt_dark', false);
+  const [dark, setDark] = usePersistentState('mt_dark', true);
+
+  useLayoutEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', dark ? '#313338' : '#fafaf9');
+  }, [dark]);
 
   const root = NOTE_NAMES[rootIndex];
   const keyInfo = useMemo(() => getKeyInfo(root, mode), [root, mode]);
@@ -37,14 +43,7 @@ function App() {
   }, [selectedIds, keyInfo.chords, mode]);
 
   return (
-    <div className={dark ? 'app app-dark' : 'app'}>
-      <button
-        className="theme-toggle"
-        onClick={() => setDark((v) => !v)}
-        aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-      >
-        {dark ? <Sun size={16} /> : <Moon size={16} />}
-      </button>
+    <div className="app">
       <div className="container">
         <KeyControls
           rootIndex={rootIndex}
@@ -52,7 +51,15 @@ function App() {
           onRootChange={setRootIndex}
           onModeChange={setMode}
           keySignatureLabel={keyInfo.keySignatureLabel}
-        />
+        >
+          {/* <button
+            className="theme-toggle"
+            onClick={() => setDark((v) => !v)}
+            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {dark ? <Sun size={14} /> : <Moon size={14} />}
+          </button> */}
+        </KeyControls>
 
         <DiatonicChords
           chords={keyInfo.chords}

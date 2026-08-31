@@ -8,6 +8,13 @@
     <meta name="theme-color" content="#0c4a6e" />
     <meta name="description" content="A minimal pocket music-theory chord reference." />
     <title>Chord Reference</title>
+    <script>
+      try {
+        if (JSON.parse(localStorage.getItem('mt_dark') || 'false')) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    </script>
     <meta property="og:image" content="https://bolt.new/static/og_default.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png">

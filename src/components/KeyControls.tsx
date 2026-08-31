@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { ROOT_LABELS } from '@/music/notes';
 import { type Mode } from '@/music/scales';
 
@@ -7,11 +8,20 @@ interface KeyControlsProps {
   onRootChange: (index: number) => void;
   onModeChange: (mode: Mode) => void;
   keySignatureLabel: string;
+  children?: ReactNode;
 }
 
-export function KeyControls({ rootIndex, mode, onRootChange, onModeChange, keySignatureLabel }: KeyControlsProps) {
+export function KeyControls({
+  rootIndex,
+  mode,
+  onRootChange,
+  onModeChange,
+  keySignatureLabel,
+  children,
+}: KeyControlsProps) {
   return (
     <div className="controls">
+      {children}
       <select
         className="select"
         value={rootIndex}
