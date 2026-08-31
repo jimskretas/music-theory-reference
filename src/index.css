@@ -75,7 +75,7 @@ body {
 }
 
 .key-signature-inline {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
   font-weight: 500;
   white-space: nowrap;
