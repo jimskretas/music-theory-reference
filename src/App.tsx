@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { KeyControls } from '@/components/KeyControls';
 import { DiatonicChords } from '@/components/DiatonicChords';
 import { PopularProgressions } from '@/components/PopularProgressions';
@@ -15,6 +16,7 @@ function App() {
   const [diatonicExpanded, setDiatonicExpanded] = usePersistentState('mt_diatonicExpanded', false);
   const [progressionsExpanded, setProgressionsExpanded] = usePersistentState('mt_progressionsExpanded', false);
   const [selectedIds, setSelectedIds] = usePersistentState<string[]>('mt_selectedIds', []);
+  const [dark, setDark] = usePersistentState('mt_dark', false);
 
   const root = NOTE_NAMES[rootIndex];
   const keyInfo = useMemo(() => getKeyInfo(root, mode), [root, mode]);
@@ -35,7 +37,14 @@ function App() {
   }, [selectedIds, keyInfo.chords, mode]);
 
   return (
-    <div className="app">
+    <div className={dark ? 'app app-dark' : 'app'}>
+      <button
+        className="theme-toggle"
+        onClick={() => setDark((v) => !v)}
+        aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {dark ? <Sun size={16} /> : <Moon size={16} />}
+      </button>
       <div className="container">
         <KeyControls
           rootIndex={rootIndex}
