@@ -2,15 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href="%BASE_URL%favicon.ico" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0c4a6e" />
+    <meta name="theme-color" content="#313338" />
     <meta name="description" content="A minimal pocket music-theory chord reference." />
     <title>Chord Reference</title>
     <script>
       try {
-        if (JSON.parse(localStorage.getItem('mt_dark') || 'false')) {
+        if (JSON.parse(localStorage.getItem('mt_dark') ?? 'true')) {
           document.documentElement.classList.add('dark');
         }
       } catch (e) {}
