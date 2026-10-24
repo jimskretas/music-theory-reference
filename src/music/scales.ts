@@ -1,16 +1,13 @@
 import {
-  type Letter,
   type Note,
-  accidentalFromOffset,
-  LETTER_INDEX,
-  LETTERS,
+  letterAt,
   mod12,
-  noteFromLetter,
   noteName,
   noteToPitchClass,
+  noteWithLetter,
 } from './notes';
 
-export type Mode = 'major' | 'minor';
+export type Mode = 'major' | 'minor' | 'melodicMinor';
 
 export interface Scale {
   root: Note;
@@ -19,15 +16,24 @@ export interface Scale {
 }
 
 const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
-const MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 10];
+const NATURAL_MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 10];
+/** Ascending melodic minor: natural minor with a raised 6th and 7th. */
+const MELODIC_MINOR_INTERVALS = [0, 2, 3, 5, 7, 9, 11];
+
+const INTERVALS_BY_MODE: Record<Mode, readonly number[]> = {
+  major: MAJOR_INTERVALS,
+  minor: NATURAL_MINOR_INTERVALS,
+  melodicMinor: MELODIC_MINOR_INTERVALS,
+};
+
+const MODE_NAMES: Record<Mode, string> = {
+  major: 'major',
+  minor: 'natural minor',
+  melodicMinor: 'melodic minor',
+};
 
 export function scaleIntervals(mode: Mode): readonly number[] {
-  return mode === 'major' ? MAJOR_INTERVALS : MINOR_INTERVALS;
-}
-
-function letterAt(letter: Letter, stepsUp: number): Letter {
-  const idx = LETTER_INDEX[letter];
-  return LETTERS[((idx + stepsUp) % 7 + 7) % 7];
+  return INTERVALS_BY_MODE[mode];
 }
 
 function buildScale(root: Note, mode: Mode): Note[] {
@@ -35,16 +41,14 @@ function buildScale(root: Note, mode: Mode): Note[] {
   const rootPc = noteToPitchClass(root);
 
   return intervals.map((interval, i) => {
-    const targetPc = mod12(rootPc + interval);
     const letter = letterAt(root.letter, i);
-    const letterPc = noteToPitchClass(noteFromLetter(letter, ''));
-    let diff = mod12(targetPc - letterPc);
-    if (diff > 6) diff -= 12;
-    const accidental = accidentalFromOffset(diff);
-    if (accidental === null) {
-      throw new Error(`Cannot spell ${noteName(root)} ${mode}: ${letter} needs ${diff} semitones of alteration`);
+    const note = noteWithLetter(letter, mod12(rootPc + interval));
+    if (note === null) {
+      throw new Error(
+        `Cannot spell ${noteName(root)} ${MODE_NAMES[mode]}: ${letter} needs more than a double accidental`,
+      );
     }
-    return noteFromLetter(letter, accidental);
+    return note;
   });
 }
 

@@ -21,6 +21,9 @@ export const PROGRESSIONS: readonly ProgressionDef[] = [
   { id: 'min-1-7-6-7', numerals: ['i', 'VII', 'VI', 'VII'], modes: ['minor'] },
   { id: 'min-1-6-7', numerals: ['i', 'VI', 'VII'], modes: ['minor'] },
   { id: 'min-1-4-5', numerals: ['i', 'iv', 'V'], modes: ['minor'] },
+  { id: 'mel-1-4-5', numerals: ['i', 'IV', 'V'], modes: ['melodicMinor'] },
+  { id: 'mel-2-5-1', numerals: ['ii', 'V', 'i'], modes: ['melodicMinor'] },
+  { id: 'mel-1-2-5', numerals: ['i', 'ii', 'V'], modes: ['melodicMinor'] },
 ];
 
 export function progressionsForMode(mode: Mode): ProgressionDef[] {

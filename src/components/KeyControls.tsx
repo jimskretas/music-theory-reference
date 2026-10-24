@@ -43,8 +43,21 @@ export function KeyControls({
       >
         <option value="major">Major</option>
         <option value="minor">Minor</option>
+        <option value="melodicMinor">Melodic minor</option>
       </select>
-      <span className="key-signature-inline" aria-label={`Key signature: ${keySignatureLabel}`}>
+      <span
+        className="key-signature-inline"
+        aria-label={
+          mode === 'melodicMinor'
+            ? `Key signature: ${keySignatureLabel}. Melodic minor raises the 6th and 7th with accidentals.`
+            : `Key signature: ${keySignatureLabel}`
+        }
+        title={
+          mode === 'melodicMinor'
+            ? 'Melodic minor uses the natural minor key signature; its raised 6th and 7th are written as accidentals.'
+            : undefined
+        }
+      >
         {keySignatureLabel}
       </span>
     </div>

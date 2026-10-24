@@ -61,6 +61,23 @@ export function noteToPitchClass(note: Note): number {
   return mod12(LETTER_TO_PC[note.letter] + ACCIDENTAL_TO_PC[note.accidental]);
 }
 
+/** Returns the letter `stepsUp` letter-names above `letter` (wrapping at B). */
+export function letterAt(letter: Letter, stepsUp: number): Letter {
+  const idx = LETTER_INDEX[letter];
+  return LETTERS[((idx + stepsUp) % 7 + 7) % 7];
+}
+
+/**
+ * Spells `pitchClass` using the given letter name, adding the accidental the
+ * spelling requires. Returns null when more than a double accidental is needed.
+ */
+export function noteWithLetter(letter: Letter, pitchClass: number): Note | null {
+  let diff = mod12(pitchClass - LETTER_TO_PC[letter]);
+  if (diff > 6) diff -= 12;
+  const accidental = accidentalFromOffset(diff);
+  return accidental === null ? null : { letter, accidental };
+}
+
 export function noteName(note: Note): string {
   return `${note.letter}${note.accidental}`;
 }

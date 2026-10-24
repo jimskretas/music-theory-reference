@@ -17,12 +17,26 @@ export function DiatonicChords({ chords, expanded, onToggle }: DiatonicChordsPro
         aria-label="Collapse diatonic chords"
       >
         <table className="triad-table">
+          <colgroup>
+            <col className="roman-col" />
+            <col span={4} />
+          </colgroup>
           <tbody>
             {chords.map((chord) => (
               <tr key={chord.degree}>
                 <td className="roman-cell">{chord.romanNumeral}</td>
                 <td className="chord-name-cell">{chord.name}</td>
                 <td className="notes-cell">{chord.notes.map(noteName).join(' ')}</td>
+                <td className="secondary-cell">
+                  {chord.secondaryDominant ? (
+                    <span className="secondary-name">{chord.secondaryDominant.name}</span>
+                  ) : (
+                    <span className="secondary-empty">—</span>
+                  )}
+                </td>
+                <td className="notes-cell">
+                  {chord.secondaryDominant ? chord.secondaryDominant.notes.map(noteName).join(' ') : ''}
+                </td>
               </tr>
             ))}
           </tbody>

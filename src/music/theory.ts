@@ -1,4 +1,4 @@
-import { type Note, noteName, noteToPitchClass, mod12, noteFromLetter, LETTERS, LETTER_INDEX } from './notes';
+import { type Note, noteName } from './notes';
 import { type Mode, getScale } from './scales';
 import { getKeySignature, keySignatureLabel, type KeySignature } from './keySignatures';
 import { getDiatonicChords, type DiatonicChord, type ChordQuality } from './chords';
@@ -72,6 +72,6 @@ export function getProgressionsForMode(mode: Mode): ProgressionDef[] {
 }
 
 export { type ProgressionDef } from './progressions';
-export { type DiatonicChord } from './chords';
+export { type DiatonicChord, type SecondaryDominant } from './chords';
 export { type KeySignature } from './keySignatures';
 export { type Mode } from './scales';

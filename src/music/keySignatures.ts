@@ -40,8 +40,9 @@ const MAJOR_TONICS: readonly Note[] = [
 ];
 
 /**
- * Natural-minor tonics for each pitch class. C♯ minor, G♯ minor and B♭ minor
- * are preferred over their eight-/seven-flat enharmonic equivalents.
+ * Natural-minor tonics for each pitch class. Melodic minor uses the same
+ * tonic spellings. C♯ minor, G♯ minor and B♭ minor are preferred over their
+ * eight-/seven-flat enharmonic equivalents.
  */
 const MINOR_TONICS: readonly Note[] = [
   noteFromLetter('C'),
@@ -78,7 +79,9 @@ function orderBySignature(notes: Note[], order: readonly Letter[]): Note[] {
 }
 
 export function getKeySignature(root: Note, mode: Mode): KeySignature {
-  const scale = getScale(root, mode);
+  // Melodic minor shares the natural minor key signature: its raised 6th and
+  // 7th are written as accidentals, not in the signature.
+  const scale = getScale(root, mode === 'melodicMinor' ? 'minor' : mode);
   const sharps = scale.notes.filter((note) => accidentalOffset(note) > 0);
   const flats = scale.notes.filter((note) => accidentalOffset(note) < 0);
 
