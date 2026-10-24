@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getScale } from '@/music/scales';
 import { noteName, noteFromLetter, type Note } from '@/music/notes';
-import { getKeySignature, keySignatureLabel } from '@/music/keySignatures';
+import { getKeySignature, keySignatureLabel, getTonic, getTonicLabel } from '@/music/keySignatures';
 import { getDiatonicChords } from '@/music/chords';
 import { getKeyInfo, resolveProgression } from '@/music/theory';
 import { PROGRESSIONS } from '@/music/progressions';
@@ -9,6 +9,37 @@ import { PROGRESSIONS } from '@/music/progressions';
 function names(notes: Note[]): string[] {
   return notes.map(noteName);
 }
+
+const MAJOR_KEYS: Array<{ tonic: string; scale: string[]; signature: string }> = [
+  { tonic: 'C', scale: ['C', 'D', 'E', 'F', 'G', 'A', 'B'], signature: 'No sharps or flats' },
+  { tonic: 'D♭', scale: ['D♭', 'E♭', 'F', 'G♭', 'A♭', 'B♭', 'C'], signature: 'B♭ E♭ A♭ D♭ G♭' },
+  { tonic: 'D', scale: ['D', 'E', 'F♯', 'G', 'A', 'B', 'C♯'], signature: 'F♯ C♯' },
+  { tonic: 'E♭', scale: ['E♭', 'F', 'G', 'A♭', 'B♭', 'C', 'D'], signature: 'B♭ E♭ A♭' },
+  { tonic: 'E', scale: ['E', 'F♯', 'G♯', 'A', 'B', 'C♯', 'D♯'], signature: 'F♯ C♯ G♯ D♯' },
+  { tonic: 'F', scale: ['F', 'G', 'A', 'B♭', 'C', 'D', 'E'], signature: 'B♭' },
+  { tonic: 'F♯', scale: ['F♯', 'G♯', 'A♯', 'B', 'C♯', 'D♯', 'E♯'], signature: 'F♯ C♯ G♯ D♯ A♯ E♯' },
+  { tonic: 'G', scale: ['G', 'A', 'B', 'C', 'D', 'E', 'F♯'], signature: 'F♯' },
+  { tonic: 'A♭', scale: ['A♭', 'B♭', 'C', 'D♭', 'E♭', 'F', 'G'], signature: 'B♭ E♭ A♭ D♭' },
+  { tonic: 'A', scale: ['A', 'B', 'C♯', 'D', 'E', 'F♯', 'G♯'], signature: 'F♯ C♯ G♯' },
+  { tonic: 'B♭', scale: ['B♭', 'C', 'D', 'E♭', 'F', 'G', 'A'], signature: 'B♭ E♭' },
+  { tonic: 'B', scale: ['B', 'C♯', 'D♯', 'E', 'F♯', 'G♯', 'A♯'], signature: 'F♯ C♯ G♯ D♯ A♯' },
+];
+
+const MINOR_KEYS: Array<{ tonic: string; scale: string[]; signature: string }> = [
+  { tonic: 'C', scale: ['C', 'D', 'E♭', 'F', 'G', 'A♭', 'B♭'], signature: 'B♭ E♭ A♭' },
+  { tonic: 'C♯', scale: ['C♯', 'D♯', 'E', 'F♯', 'G♯', 'A', 'B'], signature: 'F♯ C♯ G♯ D♯' },
+  { tonic: 'D', scale: ['D', 'E', 'F', 'G', 'A', 'B♭', 'C'], signature: 'B♭' },
+  { tonic: 'E♭', scale: ['E♭', 'F', 'G♭', 'A♭', 'B♭', 'C♭', 'D♭'], signature: 'B♭ E♭ A♭ D♭ G♭ C♭' },
+  { tonic: 'E', scale: ['E', 'F♯', 'G', 'A', 'B', 'C', 'D'], signature: 'F♯' },
+  { tonic: 'F', scale: ['F', 'G', 'A♭', 'B♭', 'C', 'D♭', 'E♭'], signature: 'B♭ E♭ A♭ D♭' },
+  { tonic: 'F♯', scale: ['F♯', 'G♯', 'A', 'B', 'C♯', 'D', 'E'], signature: 'F♯ C♯ G♯' },
+  { tonic: 'G', scale: ['G', 'A', 'B♭', 'C', 'D', 'E♭', 'F'], signature: 'B♭ E♭' },
+  { tonic: 'G♯', scale: ['G♯', 'A♯', 'B', 'C♯', 'D♯', 'E', 'F♯'], signature: 'F♯ C♯ G♯ D♯ A♯' },
+  { tonic: 'A', scale: ['A', 'B', 'C', 'D', 'E', 'F', 'G'], signature: 'No sharps or flats' },
+  { tonic: 'B♭', scale: ['B♭', 'C', 'D♭', 'E♭', 'F', 'G♭', 'A♭'], signature: 'B♭ E♭ A♭ D♭ G♭' },
+  { tonic: 'B', scale: ['B', 'C♯', 'D', 'E', 'F♯', 'G', 'A'], signature: 'F♯ C♯' },
+];
+
 
 describe('Major scales', () => {
   it('C major has no accidentals', () => {
@@ -132,6 +163,102 @@ describe('Diatonic chords', () => {
   it('E minor chords', () => {
     const chords = getDiatonicChords(noteFromLetter('E'), 'minor');
     expect(chords.map((c) => c.name)).toEqual(['Em', 'F♯dim', 'G', 'Am', 'Bm', 'C', 'D']);
+  });
+});
+
+describe('Every key signature and scale', () => {
+  it('spells all 12 major keys with the conventional tonic', () => {
+    MAJOR_KEYS.forEach((expected, pc) => {
+      const root = getTonic(pc, 'major');
+      expect(noteName(root), `pitch class ${pc} major tonic`).toBe(expected.tonic);
+      expect(names(getScale(root, 'major').notes), `${expected.tonic} major scale`).toEqual(expected.scale);
+      expect(keySignatureLabel(getKeySignature(root, 'major')), `${expected.tonic} major signature`).toBe(
+        expected.signature,
+      );
+    });
+  });
+
+  it('spells all 12 natural minor keys with the conventional tonic', () => {
+    MINOR_KEYS.forEach((expected, pc) => {
+      const root = getTonic(pc, 'minor');
+      expect(noteName(root), `pitch class ${pc} minor tonic`).toBe(expected.tonic);
+      expect(names(getScale(root, 'minor').notes), `${expected.tonic} minor scale`).toEqual(expected.scale);
+      expect(keySignatureLabel(getKeySignature(root, 'minor')), `${expected.tonic} minor signature`).toBe(
+        expected.signature,
+      );
+    });
+  });
+
+  it('keeps enharmonic keys distinct', () => {
+    expect(names(getScale(getTonic(1, 'major'), 'major').notes)).not.toEqual(
+      names(getScale(getTonic(3, 'major'), 'major').notes),
+    );
+    expect(keySignatureLabel(getKeySignature(getTonic(1, 'major'), 'major'))).toBe('B♭ E♭ A♭ D♭ G♭');
+    expect(keySignatureLabel(getKeySignature(getTonic(3, 'major'), 'major'))).toBe('B♭ E♭ A♭');
+  });
+
+  it('labels the selected spelling first', () => {
+    expect(getTonicLabel(1, 'major')).toBe('D♭ / C♯');
+    expect(getTonicLabel(1, 'minor')).toBe('C♯ / D♭');
+    expect(getTonicLabel(3, 'major')).toBe('E♭ / D♯');
+    expect(getTonicLabel(3, 'minor')).toBe('E♭ / D♯');
+    expect(getTonicLabel(0, 'major')).toBe('C');
+  });
+
+  it('uses double accidentals when a spelling requires them', () => {
+    expect(names(getScale(noteFromLetter('D', '♯'), 'major').notes)).toEqual([
+      'D♯',
+      'E♯',
+      'F𝄪',
+      'G♯',
+      'A♯',
+      'B♯',
+      'C𝄪',
+    ]);
+    expect(keySignatureLabel(getKeySignature(noteFromLetter('D', '♯'), 'major'))).toBe(
+      'F𝄪 C𝄪 G♯ D♯ A♯ E♯ B♯',
+    );
+    // D♯ major is enharmonic with E♭ major, whose signature has only three flats.
+    expect(keySignatureLabel(getKeySignature(getTonic(3, 'major'), 'major'))).toBe('B♭ E♭ A♭');
+  });
+});
+
+describe('Chords in flat and sharp keys', () => {
+  it('D♭ major chords', () => {
+    const chords = getDiatonicChords(getTonic(1, 'major'), 'major');
+    expect(chords.map((c) => c.name)).toEqual(['D♭', 'E♭m', 'Fm', 'G♭', 'A♭', 'B♭m', 'Cdim']);
+    expect(names(chords[3].notes)).toEqual(['G♭', 'B♭', 'D♭']);
+    expect(names(chords[6].notes)).toEqual(['C', 'E♭', 'G♭']);
+  });
+
+  it('E♭ major chords', () => {
+    const chords = getDiatonicChords(getTonic(3, 'major'), 'major');
+    expect(chords.map((c) => c.name)).toEqual(['E♭', 'Fm', 'Gm', 'A♭', 'B♭', 'Cm', 'Ddim']);
+  });
+
+  it('A♭ major chords', () => {
+    const chords = getDiatonicChords(getTonic(8, 'major'), 'major');
+    expect(chords.map((c) => c.name)).toEqual(['A♭', 'B♭m', 'Cm', 'D♭', 'E♭', 'Fm', 'Gdim']);
+  });
+
+  it('B♭ major chords', () => {
+    const chords = getDiatonicChords(getTonic(10, 'major'), 'major');
+    expect(chords.map((c) => c.name)).toEqual(['B♭', 'Cm', 'Dm', 'E♭', 'F', 'Gm', 'Adim']);
+  });
+
+  it('F♯ major chords', () => {
+    const chords = getDiatonicChords(getTonic(6, 'major'), 'major');
+    expect(chords.map((c) => c.name)).toEqual(['F♯', 'G♯m', 'A♯m', 'B', 'C♯', 'D♯m', 'E♯dim']);
+  });
+
+  it('E♭ minor chords', () => {
+    const chords = getDiatonicChords(getTonic(3, 'minor'), 'minor');
+    expect(chords.map((c) => c.name)).toEqual(['E♭m', 'Fdim', 'G♭', 'A♭m', 'B♭m', 'C♭', 'D♭']);
+  });
+
+  it('B♭ minor chords', () => {
+    const chords = getDiatonicChords(getTonic(10, 'minor'), 'minor');
+    expect(chords.map((c) => c.name)).toEqual(['B♭m', 'Cdim', 'D♭', 'E♭m', 'Fm', 'G♭', 'A♭']);
   });
 });
 

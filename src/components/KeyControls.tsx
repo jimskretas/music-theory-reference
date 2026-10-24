@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { ROOT_LABELS } from '@/music/notes';
+import { getTonicLabel } from '@/music/keySignatures';
 import { type Mode } from '@/music/scales';
 
 interface KeyControlsProps {
@@ -28,9 +29,9 @@ export function KeyControls({
         onChange={(e) => onRootChange(Number(e.target.value))}
         aria-label="Root key"
       >
-        {ROOT_LABELS.map((label, i) => (
+        {ROOT_LABELS.map((_, i) => (
           <option key={i} value={i}>
-            {label}
+            {getTonicLabel(i, mode)}
           </option>
         ))}
       </select>

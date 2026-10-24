@@ -1,6 +1,6 @@
 export type Letter = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 
-export type Accidental = '' | '♯' | '♭';
+export type Accidental = '' | '♯' | '♭' | '𝄪' | '𝄫';
 
 export interface Note {
   letter: Letter;
@@ -33,7 +33,29 @@ const ACCIDENTAL_TO_PC: Record<Accidental, number> = {
   '': 0,
   '♯': 1,
   '♭': -1,
+  '𝄪': 2,
+  '𝄫': -2,
 };
+
+const ACCIDENTAL_BY_OFFSET: Record<number, Accidental> = {
+  [-2]: '𝄫',
+  [-1]: '♭',
+  0: '',
+  1: '♯',
+  2: '𝄪',
+};
+
+export function accidentalOffset(note: Note): number {
+  return ACCIDENTAL_TO_PC[note.accidental];
+}
+
+/**
+ * Returns the accidental that raises/lowers a letter by `offset` semitones,
+ * or null when the offset needs more than a double accidental.
+ */
+export function accidentalFromOffset(offset: number): Accidental | null {
+  return ACCIDENTAL_BY_OFFSET[offset] ?? null;
+}
 
 export function noteToPitchClass(note: Note): number {
   return mod12(LETTER_TO_PC[note.letter] + ACCIDENTAL_TO_PC[note.accidental]);

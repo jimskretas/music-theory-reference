@@ -1,5 +1,5 @@
-import { type Note, type Mode, noteName, noteToPitchClass, mod12, noteFromLetter, LETTERS, LETTER_INDEX } from './notes';
-import { getScale } from './scales';
+import { type Note, noteName, noteToPitchClass, mod12, noteFromLetter, LETTERS, LETTER_INDEX } from './notes';
+import { type Mode, getScale } from './scales';
 import { getKeySignature, keySignatureLabel, type KeySignature } from './keySignatures';
 import { getDiatonicChords, type DiatonicChord, type ChordQuality } from './chords';
 import { type ProgressionDef, progressionsForMode } from './progressions';

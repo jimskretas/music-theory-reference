@@ -1,4 +1,14 @@
-import { type Letter, type Note, LETTER_INDEX, LETTERS, mod12, noteFromLetter, noteToPitchClass } from './notes';
+import {
+  type Letter,
+  type Note,
+  accidentalFromOffset,
+  LETTER_INDEX,
+  LETTERS,
+  mod12,
+  noteFromLetter,
+  noteName,
+  noteToPitchClass,
+} from './notes';
 
 export type Mode = 'major' | 'minor';
 
@@ -20,12 +30,6 @@ function letterAt(letter: Letter, stepsUp: number): Letter {
   return LETTERS[((idx + stepsUp) % 7 + 7) % 7];
 }
 
-function accidentalForDiff(diff: number): '' | '♯' | '♭' {
-  if (diff > 0) return '♯';
-  if (diff < 0) return '♭';
-  return '';
-}
-
 function buildScale(root: Note, mode: Mode): Note[] {
   const intervals = scaleIntervals(mode);
   const rootPc = noteToPitchClass(root);
@@ -36,7 +40,11 @@ function buildScale(root: Note, mode: Mode): Note[] {
     const letterPc = noteToPitchClass(noteFromLetter(letter, ''));
     let diff = mod12(targetPc - letterPc);
     if (diff > 6) diff -= 12;
-    return noteFromLetter(letter, accidentalForDiff(diff));
+    const accidental = accidentalFromOffset(diff);
+    if (accidental === null) {
+      throw new Error(`Cannot spell ${noteName(root)} ${mode}: ${letter} needs ${diff} semitones of alteration`);
+    }
+    return noteFromLetter(letter, accidental);
   });
 }
 

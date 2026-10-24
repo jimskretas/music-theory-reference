@@ -7,7 +7,7 @@ import { SelectedProgressions, type ResolvedProgression } from '@/components/Sel
 import { usePersistentState } from '@/hooks/usePersistentState';
 import { getKeyInfo, resolveProgression } from '@/music/theory';
 import { type Mode } from '@/music/scales';
-import { NOTE_NAMES } from '@/music/notes';
+import { getTonic } from '@/music/keySignatures';
 import { PROGRESSIONS } from '@/music/progressions';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
     if (themeMeta) themeMeta.setAttribute('content', dark ? '#313338' : '#fafaf9');
   }, [dark]);
 
-  const root = NOTE_NAMES[rootIndex];
+  const root = getTonic(rootIndex, mode);
   const keyInfo = useMemo(() => getKeyInfo(root, mode), [root, mode]);
 
   const toggleSelect = (id: string) => {
