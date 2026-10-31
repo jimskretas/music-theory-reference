@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { getScale } from '@/music/scales';
 import { noteName, noteFromLetter, noteToPitchClass, letterAt, type Note } from '@/music/notes';
-import { getKeySignature, keySignatureLabel, getTonic, getTonicLabel } from '@/music/keySignatures';
+import {
+  getKeySignature,
+  keySignatureLabel,
+  getTonic,
+  getTonicLabel,
+  getRelativeKey,
+  keyLabel,
+} from '@/music/keySignatures';
 import { getDiatonicChords } from '@/music/chords';
 import { getKeyInfo, resolveProgression } from '@/music/theory';
 import { PROGRESSIONS } from '@/music/progressions';
@@ -198,6 +205,50 @@ describe('Key signatures', () => {
     expect(keySignatureLabel(getKeySignature(noteFromLetter('E', '♭'), 'melodicMinor'))).toBe(
       'B♭ E♭ A♭ D♭ G♭ C♭',
     );
+  });
+});
+
+describe('Relative keys', () => {
+  it('goes down a minor third from major to relative minor', () => {
+    expect(getRelativeKey(0, 'major')).toEqual({ pitchClass: 9, mode: 'minor' });
+    expect(keyLabel(9, 'minor')).toBe('A minor');
+    expect(getRelativeKey(7, 'major')).toEqual({ pitchClass: 4, mode: 'minor' });
+    expect(keyLabel(4, 'minor')).toBe('E minor');
+  });
+
+  it('goes up a minor third from minor to relative major', () => {
+    expect(getRelativeKey(9, 'minor')).toEqual({ pitchClass: 0, mode: 'major' });
+    expect(keyLabel(0, 'major')).toBe('C major');
+    expect(getRelativeKey(4, 'minor')).toEqual({ pitchClass: 7, mode: 'major' });
+    expect(keyLabel(7, 'major')).toBe('G major');
+  });
+
+  it('uses the natural minor relative major for melodic minor', () => {
+    expect(getRelativeKey(0, 'melodicMinor')).toEqual({ pitchClass: 3, mode: 'major' });
+    expect(keyLabel(3, 'major')).toBe('E♭ major');
+    expect(getRelativeKey(8, 'melodicMinor')).toEqual({ pitchClass: 11, mode: 'major' });
+    expect(keyLabel(11, 'major')).toBe('B major');
+  });
+
+  it('keeps the app tonic spelling for enharmonic relative keys', () => {
+    expect(keyLabel(getRelativeKey(1, 'major').pitchClass, 'minor')).toBe('B♭ minor');
+    expect(keyLabel(getRelativeKey(10, 'minor').pitchClass, 'major')).toBe('D♭ major');
+    // E♭ minor's relative major is G♭ major, spelled F♯ in this app.
+    expect(keyLabel(getRelativeKey(3, 'minor').pitchClass, 'major')).toBe('F♯ major');
+  });
+
+  it('round-trips between relative keys in every key and mode', () => {
+    const modes = ['major', 'minor', 'melodicMinor'] as const;
+    for (const mode of modes) {
+      for (let pc = 0; pc < 12; pc++) {
+        const relative = getRelativeKey(pc, mode);
+        const back = getRelativeKey(relative.pitchClass, relative.mode);
+        expect(back, `pitch class ${pc} ${mode}`).toEqual({
+          pitchClass: pc,
+          mode: mode === 'major' ? 'major' : 'minor',
+        });
+      }
+    }
   });
 });
 

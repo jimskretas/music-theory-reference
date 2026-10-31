@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { ROOT_LABELS } from '@/music/notes';
-import { getTonicLabel } from '@/music/keySignatures';
+import { getRelativeKey, getTonicLabel, keyLabel } from '@/music/keySignatures';
 import { type Mode } from '@/music/scales';
 
 interface KeyControlsProps {
@@ -20,6 +20,10 @@ export function KeyControls({
   keySignatureLabel,
   children,
 }: KeyControlsProps) {
+  const relative = getRelativeKey(rootIndex, mode);
+  const relativeMode = relative.mode === 'major' ? 'major' : 'minor';
+  const relativeLabel = keyLabel(relative.pitchClass, relative.mode);
+
   return (
     <div className="controls">
       {children}
@@ -60,6 +64,17 @@ export function KeyControls({
       >
         {keySignatureLabel}
       </span>
+      <button
+        className="relative-key"
+        onClick={() => {
+          onRootChange(relative.pitchClass);
+          onModeChange(relative.mode);
+        }}
+        aria-label={`Switch to relative ${relativeMode}: ${relativeLabel}`}
+      >
+        <span className="relative-key-label">Relative {relativeMode}</span>
+        <span className="relative-key-name">{relativeLabel}</span>
+      </button>
     </div>
   );
 }

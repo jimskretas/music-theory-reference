@@ -134,6 +134,41 @@ html.dark .select {
   white-space: nowrap;
 }
 
+/* Relative key switch */
+.relative-key {
+  flex: 1 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.relative-key:hover {
+  border-color: var(--border-strong);
+  background: var(--selected-bg);
+}
+
+.relative-key:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.relative-key-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 /* Diatonic chords - collapsed */
 .diatonic-collapsed {
   width: 100%;

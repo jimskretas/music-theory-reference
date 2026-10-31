@@ -99,3 +99,30 @@ export function keySignatureLabel(ks: KeySignature): string {
   if (ks.notes.length === 0) return 'No sharps or flats';
   return ks.notes.map(noteName).join(' ');
 }
+
+const MODE_LABELS: Record<Mode, string> = {
+  major: 'major',
+  minor: 'minor',
+  melodicMinor: 'melodic minor',
+};
+
+/** Primary key name in the app's spelling, e.g. "A minor" or "E♭ major". */
+export function keyLabel(pitchClass: number, mode: Mode): string {
+  return `${noteName(getTonic(pitchClass, mode))} ${MODE_LABELS[mode]}`;
+}
+
+export interface RelativeKey {
+  pitchClass: number;
+  mode: Mode;
+}
+
+/**
+ * The relative key: a minor third down to the relative minor of a major key,
+ * a minor third up to the relative major of a minor key. Melodic minor uses
+ * its natural minor's relative major.
+ */
+export function getRelativeKey(pitchClass: number, mode: Mode): RelativeKey {
+  return mode === 'major'
+    ? { pitchClass: mod12(pitchClass - 3), mode: 'minor' }
+    : { pitchClass: mod12(pitchClass + 3), mode: 'major' };
+}
